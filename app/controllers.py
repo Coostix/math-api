@@ -48,5 +48,14 @@ def factorial_endpoint(req: FactRequest, db: Session = Depends(SessionLocal), _:
 
 @router.get("/history")
 def history_endpoint(db: Session = Depends(SessionLocal), _: str = Depends(get_api_key)):
-    logs = db.query(log_request.__annotations__["db"].class_.__table__).all()
-    return [dict(row) for row in logs]
+    logs = db.query(RequestLog).all()
+    return [
+        {
+            "id": log.id,
+            "operation": log.operation,
+            "input_data": log.input_data,
+            "result": log.result,
+            "timestamp": log.timestamp.isoformat()
+        }
+        for log in logs
+    ]
